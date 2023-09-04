@@ -1,9 +1,12 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+
 import axios from 'axios';
-import cheerio from 'cheerio';
 import HTMLParser from 'fast-html-parser';
 
-const URL_1="https://www.rendimentibtp.it/scheda.aspx?isin=IT0005024234";
-const URL_2="https://www.rendimentibtp.it/scheda.aspx?isin=IT0005556011";
+const URL_1=process.env.URL_1
+const URL_2=process.env.URL_2
 
 
 /**
