@@ -5,7 +5,7 @@ import Sequelize from 'sequelize';
 
 // create the connection to database
 export const sequelize = new Sequelize(    
-  process.env.DB_NAME ? process.env.DB_NAME : 'e-learning_development',
+  process.env.DB_NAME ? process.env.DB_NAME : 'FinanceBtps',
   process.env.DB_USER ? process.env.DB_USER : 'root' ,
   process.env.DB_PASSWORD ? process.env.DB_PASSWORD : 'root',
   {

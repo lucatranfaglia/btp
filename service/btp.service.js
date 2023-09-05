@@ -1,12 +1,11 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-
 import axios from 'axios';
 import HTMLParser from 'fast-html-parser';
+import Btps from '../models/btp.js';
 
-const URL_1=process.env.URL_1
-const URL_2=process.env.URL_2
+
 
 
 /**
@@ -14,26 +13,51 @@ const URL_2=process.env.URL_2
  * @param data 
  * @returns 2 studenti
  */
-export async function getBtp(){  
-  let data1;
+export async function getBtp(url){  
+  let dataUrl;
   try {
-    const urls1 =  await getURL(URL_1);
-    data1 =  urls1.data;
+    const urls1 =  await getURL(url);
+    dataUrl =  urls1.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
   // --------------------------------------
-  let data2;
+  let dataHtml;
   try {
-    data2 =  await getHTML(data1);    
+    dataHtml =  await getHTML(dataUrl);    
   } catch (error) {
-    throw new Error(error);
+    throw error;
+  }
+  // --------------------------------------
+  let saveData;
+  try {
+    saveData =  await saveDataBtp(dataHtml);    
+  } catch (error) {
+    throw error;
   }
 
-  return data2;
+  return saveData;
 } 
 
+/**
+ * 
+ * @param {object} data 
+ * @returns 
+ */
+async function saveDataBtp(data) {
+  try {
+    const save = await Btps.create(data);
+    return save
+  } catch (error) {
+    throw error;   
+  }
+}
 
+/**
+ * 
+ * @param {string} url 
+ * @returns 
+ */
 async function getURL(url) {
   try {
     return await axios.get(url);
@@ -42,48 +66,78 @@ async function getURL(url) {
   }
 }
 
+/**
+ * Ottengo i dati dal HTML
+ * @param {string} data 
+ * @returns 
+ */
 async function getHTML(data) {
-  // let $ = cheerio.load(data);
-  // const scheda_box = $('.scheda_box');
-  // const list = scheda_box[0].childNodes;
-  // console.log('list: ', list  );
-  // return list.map(element => {
-  //   console.log('element: ', element.text());
-  //   console.log('titolo: ', element.scheda_box_titolo.text());
-  //   console.log('value: ', element.scheda_box_val_sigla.text());
-  //   return {'titolo': element.scheda_box_titolo, 'value': element.scheda_box_val_sigla};
-  // })
-
-
   let dataNodes = HTMLParser.parse(data).querySelectorAll('.scheda_box');
   console.log('dataNodes: ', dataNodes.length);
-  let resp =[]
+  let resp ={};
   for (let index = 0; index < dataNodes.length; index++) {
     const node = dataNodes[index];
     const titolo =  node.querySelector('.scheda_box_titolo') ? node.querySelector('.scheda_box_titolo').text.trim() : null;
     let value = null;
     if(node && node.querySelector('.scheda_box_val_sigla')){
       value =  node.querySelector('.scheda_box_val_sigla').text.trim();
-
     }
     else if(node && node.querySelector('.scheda_box_val_small')){
       value =  node.querySelector('.scheda_box_val_small').text.trim();
-
     }
     else if(node && node.querySelector('.scheda_box_val_big')){
-      value = node.querySelector('.scheda_box_val_big').text.trim();
+      const valueTemp1 = node.querySelector('.scheda_box_val_big').text.trim();
+      const valueTemp2 = removeCharacterSpecial(valueTemp1);
+      const valueTemp3 = valueTemp2.replaceAll(`,`, '.');
+
+      value = parseFloat(valueTemp3);
     }
     else if(node && node.querySelector('.scheda_box_val_scadenza')){
-      value = node.querySelector('.scheda_box_val_scadenza').text.trim();
+      value = node.querySelector('.scheda_box_val_scadenza').text;
     }
-    
-    console.log('titolo: ', titolo);
-    console.log('value: ', value);
-    resp.push({titolo, value});
+    // -------------------------------------------
+    let titolo1;
+    try {
+      titolo1 = capitalizeFirstLetter(titolo);      
+    } catch (error) {
+      throw error;
+    }
+    // -------------------------------------------
+    let titolo2;
+    try {
+      titolo2 = removeCharacterSpecial(titolo1);    
+    } catch (error) {
+      throw error;
+    }
+    resp[titolo2] = value;
   }
   console.log('resp: ', resp);
 
   return resp;
 }
+
+/**
+ * Rimuovo tutti gli spazi e caratteri particoli
+ * @param {string} string 
+ * @returns 
+ */
+function removeCharacterSpecial(string){
+  return string.replaceAll(' ', '').replaceAll(`'`, '').replaceAll(`/`, '').replaceAll(`%`, '');
+}
+
+
+/**
+ * Capitalize First letter
+ * @param {string} string 
+ * @returns 
+ */
+function capitalizeFirstLetter(string){
+  return string.split(' ')
+    .map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ')
+}
+
 
 export default getBtp;

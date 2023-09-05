@@ -2,24 +2,28 @@
   "development": {
     "username": "root",
     "password": "root",
-    "database": "btp",
+    "database": "FinanceBtps",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "port":8889
+    "port":8889,    
+    "timezone": "+01:00"
   },
   "test": {
     "username": "root",
     "password": "root",
-    "database": "btp",
+    "database": "FinanceBtps",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "port":8889
+    "port":8889,    
+    "timezone": "+01:00"
   },
   "production": {
     "username": "root",
     "password": "root",
-    "database": "btp",
+    "database": "FinanceBtps",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "port":3306,    
+    "timezone": "+01:00"
   }
 }
