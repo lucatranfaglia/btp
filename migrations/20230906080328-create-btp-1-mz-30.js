@@ -1,7 +1,7 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable('Btps', {
+  await queryInterface.createTable('Btp1MZ30s', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -59,5 +59,5 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 export function down(queryInterface, Sequelize) {
-  return queryInterface.dropTable('Btps');
+  return queryInterface.dropTable('Btp1MZ30s');
 }

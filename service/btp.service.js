@@ -3,9 +3,9 @@ dotenv.config();
 
 import axios from 'axios';
 import HTMLParser from 'fast-html-parser';
-import Btps from '../models/btp.js';
 
-
+import {removeCharacterSpecial, capitalizeFirstLetter} from '../utils/functions.js';
+import { saveBtp } from '../service/query.service.js';
 
 
 /**
@@ -13,7 +13,7 @@ import Btps from '../models/btp.js';
  * @param data 
  * @returns 2 studenti
  */
-export async function getBtp(url){  
+export async function getBtp(Model, url){  
   let dataUrl;
   try {
     const urls1 =  await getURL(url);
@@ -31,7 +31,7 @@ export async function getBtp(url){
   // --------------------------------------
   let saveData;
   try {
-    saveData =  await saveDataBtp(dataHtml);    
+    saveData =  await saveBtp(Model, dataHtml);    
   } catch (error) {
     throw error;
   }
@@ -39,19 +39,6 @@ export async function getBtp(url){
   return saveData;
 } 
 
-/**
- * 
- * @param {object} data 
- * @returns 
- */
-async function saveDataBtp(data) {
-  try {
-    const save = await Btps.create(data);
-    return save
-  } catch (error) {
-    throw error;   
-  }
-}
 
 /**
  * 
@@ -116,28 +103,6 @@ async function getHTML(data) {
   return resp;
 }
 
-/**
- * Rimuovo tutti gli spazi e caratteri particoli
- * @param {string} string 
- * @returns 
- */
-function removeCharacterSpecial(string){
-  return string.replaceAll(' ', '').replaceAll(`'`, '').replaceAll(`/`, '').replaceAll(`%`, '');
-}
-
-
-/**
- * Capitalize First letter
- * @param {string} string 
- * @returns 
- */
-function capitalizeFirstLetter(string){
-  return string.split(' ')
-    .map(word => {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-    .join(' ')
-}
 
 
 export default getBtp;

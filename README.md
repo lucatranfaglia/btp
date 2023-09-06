@@ -14,7 +14,7 @@
 
 # Avvio della migrazione
 `npx sequelize-cli db:migrate`
-`npx sequelize-cli db:migrate XXXXXXXXXXXXXX-create-user`
+`npx sequelize-cli db:migrate --name XXXXXXXXXXXXXX-create-user`
 
 # Cancellazione della migrazione
 `npx sequelize-cli db:migrate:undo`
